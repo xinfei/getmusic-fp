@@ -7,7 +7,7 @@ let baseUrl = 'http://localhost:3000'
 
 export default {
   base: function(){
-    return base
+    return baseUrl
   }
 }
 
@@ -28,4 +28,6 @@ export const getKuGouMusicList = params => { return axios.post(`${baseUrl}/kugou
 // 根据歌曲hash值获取歌曲地址
 export const getKuGouMusicUrl = params => { return axios.post(`${baseUrl}/kugou/music`, qs.stringify(params));};
 
+// 根据歌曲hash值获取歌曲地址
+export const getKuGouMusicFile = params => { return axios.post(`${baseUrl}/kugou/sendmusic`, qs.stringify(params));};
 

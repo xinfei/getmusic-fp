@@ -83,13 +83,13 @@
       </div>
     </el-main>
     <!--下载隐藏按钮-->
-    <a href="" download="" ref="downmusic"></a>
+    <!--<form method="GET" ref="downmusic" action="" style="display:none"></form>-->
   </el-container>
 </template>
 
 <script>
-  import {getKuGouMusicList, getKuGouMusicUrl} from "../api/ajax";
-
+  import {getKuGouMusicList, getKuGouMusicUrl, getKuGouMusicFile} from "../api/ajax";
+  import base from "../api/ajax";
   export default {
     data () {
       return {
@@ -158,14 +158,40 @@
         let para = {
           fileHash: row.FileHash
         };
-        getKuGouMusicUrl(para).then(res => {
-          if(res.data.data.play_url){
-            this.$refs.downmusic.href = res.data.data.play_url;
-            this.$refs.downmusic.download = row.SongName+'.mp3';
-            this.$refs.downmusic.click();
-            // window.open(res.data.data.play_url)
-          }
-        });
+        window.open(base.base()+'/kugou/sendmusic?fileHash='+row.FileHash);
+
+        // getKuGouMusicFile(para).then(res => {
+        //   // if(res.data.data.play_url){
+        //   //   this.funDownLoad(res.data.data.song_name+'.mp3', res.data.data.play_url);
+        //   //   // this.downloadFile(res.data.data.play_url)
+        //   // }
+        //   // window.open(res.data)
+        //   this.funDownLoad('111.mp3', res)
+        // });
+      },
+      // 下载歌曲方法
+      // funDownLoad(content, filename){
+      //   // 创建隐藏的可下载链接
+      //   var eleLink = document.createElement('a');
+      //   eleLink.download = filename;
+      //   eleLink.style.display = 'none';
+      //   eleLink.target = '_blank';
+      //   // 字符内容转变成blob地址
+      //   var blob = new Blob([content]);
+      //   eleLink.href = URL.createObjectURL(blob);
+      //   // 触发点击
+      //   document.body.appendChild(eleLink);
+      //   eleLink.click();
+      //   // 然后移除
+      //   document.body.removeChild(eleLink);
+      // },
+      funDownLoad(name, href){
+        var a = document.createElement("a"), //创建a标签
+          e = document.createEvent("MouseEvents"); //创建鼠标事件对象
+        e.initEvent("click", false, false); //初始化事件对象
+        a.href = href; //设置下载地址
+        a.download = name; //设置下载文件名
+        a.dispatchEvent(e); //给指定的元素，执行事件click事件
       },
       // 音乐播放相关
       listenMusic(){
