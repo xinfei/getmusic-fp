@@ -82,13 +82,11 @@
                        layout="total, sizes, prev, pager, next, jumper" :total="total"></el-pagination>
       </div>
     </el-main>
-    <!--下载隐藏按钮-->
-    <!--<form method="GET" ref="downmusic" action="" style="display:none"></form>-->
   </el-container>
 </template>
 
 <script>
-  import {getKuGouMusicList, getKuGouMusicUrl, getKuGouMusicFile} from "../api/ajax";
+  import {getKuGouMusicList, getKuGouMusicUrl} from "../api/ajax";
   import base from "../api/ajax";
   export default {
     data () {
@@ -99,7 +97,6 @@
           currentTime:0,
           maxTime:0,
           volume:50,
-          // url: 'http://sc1.111ttt.cn:8282/2018/1/03m/13/396131232171.m4a?tflag=1519095601&pin=6cd414115fdb9a950d827487b16b5f97#.mp3'
           url: ''
         },
         listPara: {
@@ -112,11 +109,6 @@
         listLoading: false
       }
     },
-    // mounted(){
-    //   this.$nextTick(()=>{
-    //     setInterval(this.listenMusic,1000)
-    //   })
-    // },
     methods: {
       // 根据歌曲名称获取歌曲列表
       getMusicList: function(){
@@ -159,39 +151,6 @@
           fileHash: row.FileHash
         };
         window.open(base.base()+'/kugou/sendmusic?fileHash='+row.FileHash);
-
-        // getKuGouMusicFile(para).then(res => {
-        //   // if(res.data.data.play_url){
-        //   //   this.funDownLoad(res.data.data.song_name+'.mp3', res.data.data.play_url);
-        //   //   // this.downloadFile(res.data.data.play_url)
-        //   // }
-        //   // window.open(res.data)
-        //   this.funDownLoad('111.mp3', res)
-        // });
-      },
-      // 下载歌曲方法
-      // funDownLoad(content, filename){
-      //   // 创建隐藏的可下载链接
-      //   var eleLink = document.createElement('a');
-      //   eleLink.download = filename;
-      //   eleLink.style.display = 'none';
-      //   eleLink.target = '_blank';
-      //   // 字符内容转变成blob地址
-      //   var blob = new Blob([content]);
-      //   eleLink.href = URL.createObjectURL(blob);
-      //   // 触发点击
-      //   document.body.appendChild(eleLink);
-      //   eleLink.click();
-      //   // 然后移除
-      //   document.body.removeChild(eleLink);
-      // },
-      funDownLoad(name, href){
-        var a = document.createElement("a"), //创建a标签
-          e = document.createEvent("MouseEvents"); //创建鼠标事件对象
-        e.initEvent("click", false, false); //初始化事件对象
-        a.href = href; //设置下载地址
-        a.download = name; //设置下载文件名
-        a.dispatchEvent(e); //给指定的元素，执行事件click事件
       },
       // 音乐播放相关
       listenMusic(){
