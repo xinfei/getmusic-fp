@@ -99,7 +99,9 @@
     </el-main>
     <!--下载选择音质-->
     <el-dialog title="选择音质" :visible.sync="qualityVisible" :close-on-click-modal="false">
-      
+      <el-button size="small" type="primary" v-if="btnNQ" @click="playMusic(scope.row)">NQ</el-button>
+      <el-button size="small" type="primary" v-if="btnHQ" @click="playMusic(scope.row)">HQ</el-button>
+      <el-button size="small" type="primary" v-if="btnSQ" @click="playMusic(scope.row)">SQ</el-button>
       <div slot="footer" class="dialog-footer">
         <el-button @click.native="qualityVisible = false">取消</el-button>
       </div>
@@ -130,7 +132,10 @@
         tableKey: 0,
         listLoading: false,
         // 音质相关
-        qualityVisible: false
+        qualityVisible: false,
+        btnNQ: false,
+        btnHQ: false,
+        btnSQ: false
       }
     },
     methods: {
@@ -194,6 +199,14 @@
           tempData.forEach(element => {
             data[element.split('&')[0]] = element.split('&')[1]
           })
+          for (const key in data) {
+            if (data.hasOwnProperty(key)) {
+              const element = object[key];
+              if (element != '' && element != 'undefined') {
+
+              }
+            }
+          }
           // console.log(data)
           
         });
