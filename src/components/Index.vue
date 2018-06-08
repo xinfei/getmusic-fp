@@ -63,9 +63,24 @@
             <span>{{scope.row.SingerName}}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="文件hash">
+        <el-table-column align="center" label="FileHash">
           <template slot-scope="scope">
-            <span>{{scope.row.FileHash}}</span>
+            <span v-html="filterHash(scope.row.FileHash)"></span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="HQFileHash">
+          <template slot-scope="scope">
+            <span v-html="filterHash(scope.row.HQFileHash)"></span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="SQFileHash">
+          <template slot-scope="scope">
+            <span v-html="filterHash(scope.row.SQFileHash)"></span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="MvHash">
+          <template slot-scope="scope">
+            <span v-html="filterHash(scope.row.MvHash)"></span>
           </template>
         </el-table-column>
         <el-table-column align="center" width="300px" label="操作">
@@ -82,11 +97,18 @@
                        layout="total, sizes, prev, pager, next, jumper" :total="total"></el-pagination>
       </div>
     </el-main>
+    <!--下载选择音质-->
+    <el-dialog title="选择音质" :visible.sync="qualityVisible" :close-on-click-modal="false">
+      
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native="qualityVisible = false">取消</el-button>
+      </div>
+    </el-dialog>
   </el-container>
 </template>
 
 <script>
-  import {getKuGouMusicList, getKuGouMusicUrl} from "../api/ajax";
+  import {getKuGouMusicList, getKuGouMusicUrl, getKuGouMusicQualityUrl} from "../api/ajax";
   import base from "../api/ajax";
   export default {
     data () {
@@ -106,7 +128,9 @@
         total: 0,
         propertyData: [],
         tableKey: 0,
-        listLoading: false
+        listLoading: false,
+        // 音质相关
+        qualityVisible: false
       }
     },
     methods: {
@@ -121,6 +145,14 @@
           this.total = res.data.data.total
           this.listLoading = false
         });
+      },
+      // 格式化hash数据
+      filterHash: function(hashValue) {
+        if(hashValue == '' || hashValue == '00000000000000000000000000000000'){
+          return '暂无信息'
+        } else{
+          return hashValue
+        }
       },
       // 数据表格分页相关
       handleSizeChange(val) {
@@ -147,10 +179,25 @@
       },
       // 下载音乐
       downMusic: function(row){
+        // let para = {
+        //   fileHash: row.FileHash
+        // };
+        // window.open(base.base()+'/kugou/sendmusic?fileHash='+row.FileHash);
         let para = {
-          fileHash: row.FileHash
-        };
-        window.open(base.base()+'/kugou/sendmusic?fileHash='+row.FileHash);
+          FileHash: row.FileHash,
+          SQFileHash: this.filterHash(row.SQFileHash),
+          HQFileHash: this.filterHash(row.HQFileHash)
+        }
+        getKuGouMusicQualityUrl(para).then(res => {
+          let data = {}
+          const tempData = res.data.slice(0,res.data.length-1).split(',')
+          tempData.forEach(element => {
+            data[element.split('&')[0]] = element.split('&')[1]
+          })
+          // console.log(data)
+          
+        });
+        // this.qualityVisible = true
       },
       // 音乐播放相关
       listenMusic(){
