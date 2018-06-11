@@ -99,9 +99,9 @@
     </el-main>
     <!--下载选择音质-->
     <el-dialog title="选择音质" :visible.sync="qualityVisible" :close-on-click-modal="false">
-      <el-button size="small" type="primary" v-if="btnNQ" @click="playMusic(scope.row)">NQ</el-button>
-      <el-button size="small" type="primary" v-if="btnHQ" @click="playMusic(scope.row)">HQ</el-button>
-      <el-button size="small" type="primary" v-if="btnSQ" @click="playMusic(scope.row)">SQ</el-button>
+      <el-button size="small" type="primary" v-if="btnNQ" @click="getMusicFile('nq')">NQ</el-button>
+      <el-button size="small" type="primary" v-if="btnHQ" @click="getMusicFile('hq')">HQ</el-button>
+      <el-button size="small" type="primary" v-if="btnSQ" @click="getMusicFile('sq')">SQ</el-button>
       <div slot="footer" class="dialog-footer">
         <el-button @click.native="qualityVisible = false">取消</el-button>
       </div>
@@ -135,7 +135,10 @@
         qualityVisible: false,
         btnNQ: false,
         btnHQ: false,
-        btnSQ: false
+        btnSQ: false,
+        nqUrl: '',
+        hqUrl: '',
+        sqUrl: ''
       }
     },
     methods: {
@@ -184,33 +187,87 @@
       },
       // 下载音乐
       downMusic: function(row){
-        // let para = {
-        //   fileHash: row.FileHash
-        // };
-        // window.open(base.base()+'/kugou/sendmusic?fileHash='+row.FileHash);
-        let para = {
-          FileHash: row.FileHash,
-          SQFileHash: this.filterHash(row.SQFileHash),
-          HQFileHash: this.filterHash(row.HQFileHash)
-        }
-        getKuGouMusicQualityUrl(para).then(res => {
-          let data = {}
-          const tempData = res.data.slice(0,res.data.length-1).split(',')
-          tempData.forEach(element => {
-            data[element.split('&')[0]] = element.split('&')[1]
-          })
-          for (const key in data) {
-            if (data.hasOwnProperty(key)) {
-              const element = object[key];
-              if (element != '' && element != 'undefined') {
-                
-              }
-            }
+        const date = new Date();
+        const timer = date.getTime().toString();
+        let end = 0
+        // 普通音质
+        if (row.FileHash != '' && row.FileHash != '00000000000000000000000000000000') {
+          let paraNQ = {
+            fileHash: row.FileHash,
+            timer: timer
           }
-          // console.log(data)
-          
-        });
-        // this.qualityVisible = true
+          getKuGouMusicQualityUrl(paraNQ).then(res => {
+            if (res.data != '') {
+              this.nqUrl = res.data
+              this.btnNQ = true
+            } else{
+              this.nqUrl = ''
+              this.btnNQ = false
+            }
+            end++
+          });
+        } else{
+          this.nqUrl = ''
+          this.btnNQ = false
+          end++
+        }
+        // hq音质
+        if (row.HQFileHash != '' && row.HQFileHash != '00000000000000000000000000000000') {
+          let paraHQ = {
+            fileHash: row.HQFileHash,
+            timer: timer
+          }
+          getKuGouMusicQualityUrl(paraHQ).then(res => {
+            if (res.data != '') {
+              this.hqUrl = res.data
+              this.btnHQ = true
+            } else{
+              this.hqUrl = ''
+              this.btnHQ = false
+            }
+            end++
+          });
+        } else{
+          this.hqUrl = ''
+          this.btnHQ = false
+          end++
+        }
+        // sq音质
+        if (row.SQFileHash != '' && row.SQFileHash != '00000000000000000000000000000000') {
+          let paraSQ = {
+            fileHash: row.SQFileHash,
+            timer: timer
+          }
+          getKuGouMusicQualityUrl(paraSQ).then(res => {
+            if (res.data != '') {
+              this.sqUrl = res.data
+              this.btnSQ = true
+            } else{
+              this.sqUrl = ''
+              this.btnSQ = false
+            }
+            end++
+          });
+        } else{
+          this.sqUrl = ''
+          this.btnSQ = false
+          end++
+        }
+        let isEnd = setInterval(() => {
+          if(end >= 3){
+            this.qualityVisible = true
+            clearInterval(isEnd)
+          }
+        }, 500)
+      },
+      getMusicFile: function(musicType) {
+        if (musicType == 'nq') {
+          window.open(base.base()+'/kugou/sendmusic?musicUrl='+nqUrl);
+        } else if (musicType == 'hq') {
+          window.open(base.base()+'/kugou/sendmusic?musicUrl='+hqUrl);
+        } else {
+          window.open(base.base()+'/kugou/sendmusic?musicUrl='+sqUrl);
+        }
       },
       // 音乐播放相关
       listenMusic(){
