@@ -13,7 +13,9 @@
     "axios": "^0.18.0",
     "element-ui": "^2.3.7",
     "font-awesome": "^4.7.0",
+    "hls.js": "^0.9.1",
     "vue": "^2.5.2",
+    "vue-aplayer": "^1.6.0",
     "vue-router": "^3.0.1"
   },
   "devDependencies": {
