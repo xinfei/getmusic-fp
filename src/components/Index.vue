@@ -108,7 +108,9 @@
         btnSQ: false,
         nqUrl: '',
         hqUrl: '',
-        sqUrl: ''
+        sqUrl: '',
+        downMusicName: '',
+        musicType: '',
       }
     },
     created() {
@@ -201,6 +203,7 @@
         const date = new Date();
         const timer = date.getTime().toString();
         let end = 0
+        this.downMusicName = row.FileName
         // 普通音质
         if(row.FileHash != '' && row.FileHash != '00000000000000000000000000000000'){
           let paraNQ = {
@@ -281,11 +284,11 @@
       },
       getMusicFile: function(musicType){
         if(musicType == 'nq'){
-          window.open(base.base() + '/kugou/sendmusic?musicUrl=' + this.nqUrl);
+          window.open(base.base() + '/kugou/sendmusic?musicUrl=' + this.nqUrl + '&musicName=' + this.downMusicName);
         } else if(musicType == 'hq'){
-          window.open(base.base() + '/kugou/sendmusic?musicUrl=' + this.hqUrl);
+          window.open(base.base() + '/kugou/sendmusic?musicUrl=' + this.hqUrl + '&musicName=' + this.downMusicName);
         } else{
-          window.open(base.base() + '/kugou/sendmusic?musicUrl=' + this.sqUrl);
+          window.open(base.base() + '/kugou/sendmusic?musicUrl=' + this.sqUrl + '&musicName=' + this.downMusicName);
         }
       }
     }
