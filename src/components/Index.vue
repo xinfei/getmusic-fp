@@ -10,7 +10,7 @@
       <!--搜索框-->
       <div class="search-b wl">
         <div class="user-in">
-          <el-input placeholder="请输入歌曲名称" v-model="musicName" class="input-with-select">
+          <el-input placeholder="请输入歌曲名称" v-model="musicName" class="input-with-select" @keydown.native="enterSearch($event)">
             <!--<el-select v-model="select" slot="prepend" placeholder="请选择">-->
             <!--<el-option label="餐厅名" value="1"></el-option>-->
             <!--<el-option label="订单号" value="2"></el-option>-->
@@ -47,8 +47,9 @@
         </el-table-column>
         <el-table-column align="center" width="300px" label="操作">
           <template slot-scope="scope">
-            <el-button size="small" type="primary" @click="playMusic(scope.row)">试听</el-button>
-            <el-button size="small" type="success" @click="downMusic(scope.row)">下载</el-button>
+            <el-button size="small" type="primary" @click="playMusic(scope.row)">歌曲试听</el-button>
+            <el-button size="small" type="primary" @click="downLrc(scope.row)">歌词下载</el-button>
+            <el-button size="small" type="success" @click="downMusic(scope.row)">歌曲下载</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -125,6 +126,13 @@
           this.listLoading = false
         });
       },
+      // 回车搜索
+      enterSearch: function(event){
+        // console.log(event);
+        if(event.key === 'Enter'){
+          this.getMusicList()
+        }
+      },
       // 格式化hash数据
       filterHash: function(hashValue){
         if(hashValue == '' || hashValue == '00000000000000000000000000000000'){
@@ -149,12 +157,43 @@
           fileHash: row.FileHash
         };
         getKuGouMusicUrl(para).then(res =>{
-          this.musicPlayer.url = res.data.data.play_url
-          this.musicPlayer.title = res.data.data.song_name
-          this.musicPlayer.author = res.data.data.author_name
-          this.musicPlayer.pic = res.data.data.img
-          this.musicPlayer.lrc = res.data.data.lyrics
-          this.isShow = true
+          if(res.data.data.play_url === ''){
+            this.$message({
+              message: '酷狗都没有这首歌，不行就别听了',
+              type: 'error'
+            })
+          } else{
+            this.musicPlayer.url = res.data.data.play_url
+            this.musicPlayer.title = res.data.data.song_name
+            this.musicPlayer.author = res.data.data.author_name
+            this.musicPlayer.pic = res.data.data.img
+            this.musicPlayer.lrc = res.data.data.lyrics
+            this.isShow = true
+          }
+        });
+      },
+      // 歌词下载
+      downLrc: function(row){
+        let para = {
+          fileHash: row.FileHash
+        };
+        getKuGouMusicUrl(para).then(res =>{
+          if(res.data.data.lyrics === ''){
+            this.$message({
+              message: '酷狗都没有这首歌的歌词，不行就别听了',
+              type: 'error'
+            })
+          } else{
+            const eleLink = document.createElement('a')
+            eleLink.download = res.data.data.audio_name + '.lrc';
+            eleLink.style.display = 'none'
+            eleLink.target = '_blank'
+            const blob = new Blob([res.data.data.lyrics])
+            eleLink.href = URL.createObjectURL(blob)
+            document.body.appendChild(eleLink)
+            eleLink.click()
+            document.body.removeChild(eleLink)
+          }
         });
       },
       // 下载音乐
@@ -227,8 +266,16 @@
         }
         let isEnd = setInterval(() =>{
           if(end >= 3){
-            this.qualityVisible = true
-            clearInterval(isEnd)
+            if(this.btnSQ||this.btnHQ||this.btnNQ){
+              this.qualityVisible = true
+              clearInterval(isEnd)
+            } else{
+              this.$message({
+                message: '酷狗都没有这首歌，我也很无奈啊',
+                type: 'error'
+              })
+              clearInterval(isEnd)
+            }
           }
         }, 500)
       },
