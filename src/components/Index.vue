@@ -199,88 +199,104 @@
         });
       },
       // 下载音乐
+      // downMusic: function(row){
+      //   const date = new Date();
+      //   const timer = date.getTime().toString();
+      //   let end = 0
+      //   this.downMusicName = row.FileName
+      //   // 普通音质
+      //   if(row.FileHash != '' && row.FileHash != '00000000000000000000000000000000'){
+      //     let paraNQ = {
+      //       fileHash: row.FileHash,
+      //       timer: timer
+      //     }
+      //     getKuGouMusicQualityUrl(paraNQ).then(res =>{
+      //       if(res.data != ''){
+      //         this.nqUrl = res.data
+      //         this.btnNQ = true
+      //       } else{
+      //         this.nqUrl = ''
+      //         this.btnNQ = false
+      //       }
+      //       end++
+      //     });
+      //   } else{
+      //     this.nqUrl = ''
+      //     this.btnNQ = false
+      //     end++
+      //   }
+      //   // hq音质
+      //   if(row.HQFileHash != '' && row.HQFileHash != '00000000000000000000000000000000'){
+      //     let paraHQ = {
+      //       fileHash: row.HQFileHash,
+      //       timer: timer
+      //     }
+      //     getKuGouMusicQualityUrl(paraHQ).then(res =>{
+      //       if(res.data != ''){
+      //         this.hqUrl = res.data
+      //         this.btnHQ = true
+      //       } else{
+      //         this.hqUrl = ''
+      //         this.btnHQ = false
+      //       }
+      //       end++
+      //     });
+      //   } else{
+      //     this.hqUrl = ''
+      //     this.btnHQ = false
+      //     end++
+      //   }
+      //   // sq音质
+      //   if(row.SQFileHash != '' && row.SQFileHash != '00000000000000000000000000000000'){
+      //     let paraSQ = {
+      //       fileHash: row.SQFileHash,
+      //       timer: timer
+      //     }
+      //     getKuGouMusicQualityUrl(paraSQ).then(res =>{
+      //       if(res.data != ''){
+      //         this.sqUrl = res.data
+      //         this.btnSQ = true
+      //       } else{
+      //         this.sqUrl = ''
+      //         this.btnSQ = false
+      //       }
+      //       end++
+      //     });
+      //   } else{
+      //     this.sqUrl = ''
+      //     this.btnSQ = false
+      //     end++
+      //   }
+      //   let isEnd = setInterval(() =>{
+      //     if(end >= 3){
+      //       if(this.btnSQ||this.btnHQ||this.btnNQ){
+      //         this.qualityVisible = true
+      //         clearInterval(isEnd)
+      //       } else{
+      //         this.$message({
+      //           message: '酷狗都没有这首歌，我也很无奈啊',
+      //           type: 'error'
+      //         })
+      //         clearInterval(isEnd)
+      //       }
+      //     }
+      //   }, 500)
+      // },
+      // 下载音乐普通音质
       downMusic: function(row){
-        const date = new Date();
-        const timer = date.getTime().toString();
-        let end = 0
-        this.downMusicName = row.FileName
-        // 普通音质
-        if(row.FileHash != '' && row.FileHash != '00000000000000000000000000000000'){
-          let paraNQ = {
-            fileHash: row.FileHash,
-            timer: timer
+        let para = {
+          fileHash: row.FileHash
+        };
+        getKuGouMusicUrl(para).then(res =>{
+          if(res.data.data.play_url === ''){
+            this.$message({
+              message: '酷狗都没有这首歌，不行就别听了',
+              type: 'error'
+            })
+          } else{
+            window.open(res.data.data.play_url);
           }
-          getKuGouMusicQualityUrl(paraNQ).then(res =>{
-            if(res.data != ''){
-              this.nqUrl = res.data
-              this.btnNQ = true
-            } else{
-              this.nqUrl = ''
-              this.btnNQ = false
-            }
-            end++
-          });
-        } else{
-          this.nqUrl = ''
-          this.btnNQ = false
-          end++
-        }
-        // hq音质
-        if(row.HQFileHash != '' && row.HQFileHash != '00000000000000000000000000000000'){
-          let paraHQ = {
-            fileHash: row.HQFileHash,
-            timer: timer
-          }
-          getKuGouMusicQualityUrl(paraHQ).then(res =>{
-            if(res.data != ''){
-              this.hqUrl = res.data
-              this.btnHQ = true
-            } else{
-              this.hqUrl = ''
-              this.btnHQ = false
-            }
-            end++
-          });
-        } else{
-          this.hqUrl = ''
-          this.btnHQ = false
-          end++
-        }
-        // sq音质
-        if(row.SQFileHash != '' && row.SQFileHash != '00000000000000000000000000000000'){
-          let paraSQ = {
-            fileHash: row.SQFileHash,
-            timer: timer
-          }
-          getKuGouMusicQualityUrl(paraSQ).then(res =>{
-            if(res.data != ''){
-              this.sqUrl = res.data
-              this.btnSQ = true
-            } else{
-              this.sqUrl = ''
-              this.btnSQ = false
-            }
-            end++
-          });
-        } else{
-          this.sqUrl = ''
-          this.btnSQ = false
-          end++
-        }
-        let isEnd = setInterval(() =>{
-          if(end >= 3){
-            if(this.btnSQ||this.btnHQ||this.btnNQ){
-              this.qualityVisible = true
-              clearInterval(isEnd)
-            } else{
-              this.$message({
-                message: '酷狗都没有这首歌，我也很无奈啊',
-                type: 'error'
-              })
-              clearInterval(isEnd)
-            }
-          }
-        }, 500)
+        });
       },
       getMusicFile: function(musicType){
         if(musicType == 'nq'){
