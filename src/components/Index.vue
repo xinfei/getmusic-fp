@@ -32,17 +32,17 @@
         <el-table-column type="index" label="序号" width="60"></el-table-column>
         <el-table-column align="center" label="歌曲名">
           <template slot-scope="scope">
-            <span>{{scope.row.SongName}}</span>
+            <span>{{scope.row.songname}}</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="专辑名">
           <template slot-scope="scope">
-            <span>{{scope.row.AlbumName}}</span>
+            <span>{{scope.row.album_name}}</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="歌手名">
           <template slot-scope="scope">
-            <span>{{scope.row.SingerName}}</span>
+            <span>{{scope.row.singername}}</span>
           </template>
         </el-table-column>
         <el-table-column align="center" width="300px" label="操作">
@@ -123,7 +123,7 @@
         para.name = this.musicName
         getKuGouMusicList(para).then(res =>{
           // console.log(res.data.data.lists)
-          this.propertyData = res.data.data.lists
+          this.propertyData = res.data.data.info
           this.total = res.data.data.total
           this.listLoading = false
         });
@@ -156,7 +156,9 @@
       playMusic: function(row){
         this.isShow = false
         let para = {
-          fileHash: row.FileHash
+          albumAudioId: row.album_audio_id,
+          albumId: row.album_id,
+          hash: row.hash
         };
         getKuGouMusicUrl(para).then(res =>{
           if(res.data.data.play_url === ''){
@@ -285,7 +287,9 @@
       // 下载音乐普通音质
       downMusic: function(row){
         let para = {
-          fileHash: row.FileHash
+          albumAudioId: row.album_audio_id,
+          albumId: row.album_id,
+          hash: row.hash
         };
         getKuGouMusicUrl(para).then(res =>{
           if(res.data.data.play_url === ''){
